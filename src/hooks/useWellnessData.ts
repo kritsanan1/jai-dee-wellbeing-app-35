@@ -1,5 +1,6 @@
 
 import { useState, useEffect } from 'react';
+import { Star, Award, Zap } from 'lucide-react';
 
 interface WellnessData {
   currentStreak: number;
@@ -19,7 +20,7 @@ interface Achievement {
   id: string;
   title: string;
   titleTh: string;
-  icon: React.ComponentType;
+  icon: React.ComponentType<{ size?: number; className?: string; }>;
   unlocked: boolean;
   date?: Date;
 }
@@ -49,7 +50,7 @@ export const useWellnessData = () => {
           id: '1',
           title: 'First Step',
           titleTh: 'ก้าวแรก',
-          icon: () => null,
+          icon: Star,
           unlocked: true,
           date: new Date(Date.now() - 86400000 * 5)
         },
@@ -57,7 +58,7 @@ export const useWellnessData = () => {
           id: '2',
           title: 'Week Warrior',
           titleTh: 'นักรบสัปดาห์',
-          icon: () => null,
+          icon: Award,
           unlocked: true,
           date: new Date(Date.now() - 86400000 * 2)
         },
@@ -65,7 +66,7 @@ export const useWellnessData = () => {
           id: '3',
           title: 'Meditation Master',
           titleTh: 'ปรมาจารย์สมาธิ',
-          icon: () => null,
+          icon: Zap,
           unlocked: false
         }
       ];

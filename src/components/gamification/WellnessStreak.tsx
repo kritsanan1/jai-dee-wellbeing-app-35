@@ -16,7 +16,7 @@ interface Achievement {
   id: string;
   title: string;
   titleTh: string;
-  icon: React.ComponentType;
+  icon: React.ComponentType<{ size?: number; className?: string; }>;
   unlocked: boolean;
   date?: Date;
 }
