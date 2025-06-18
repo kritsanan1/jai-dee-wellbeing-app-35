@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,18 +8,34 @@ import { useNavigate } from 'react-router-dom';
 import WellnessStreak from '@/components/gamification/WellnessStreak';
 import AnimatedButton from '@/components/ui/animated-button';
 import ProgressIndicator from '@/components/ui/progress-indicator';
+import PremiumModal from '@/components/premium/PremiumModal';
+import FeedbackForm from '@/components/feedback/FeedbackForm';
 import { useWellnessData } from '@/hooks/useWellnessData';
 
 const Home: React.FC = () => {
   const { t, language } = useLanguage();
   const navigate = useNavigate();
   const { wellnessData, isLoading } = useWellnessData();
+  const [showPremiumModal, setShowPremiumModal] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
 
   const moodData = {
     current: 'Calm',
     currentTh: 'สงบ',
     percentage: 75,
     streak: wellnessData.currentStreak
+  };
+
+  const handleUpgrade = () => {
+    // Handle premium upgrade logic
+    setShowPremiumModal(false);
+    // Redirect to payment or subscription page
+  };
+
+  const handleFeedbackSubmit = (feedback: any) => {
+    console.log('Feedback submitted:', feedback);
+    // Send feedback to backend or analytics service
+    setShowFeedback(false);
   };
 
   if (isLoading) {
@@ -131,6 +147,7 @@ const Home: React.FC = () => {
               size="sm" 
               className="bg-white text-sunset-orange hover:bg-gray-100"
               animation="bounce"
+              onClick={() => setShowPremiumModal(true)}
             >
               {language === 'th' ? 'อัปเกรด' : 'Upgrade'}
             </AnimatedButton>
@@ -154,6 +171,28 @@ const Home: React.FC = () => {
           </p>
         </CardContent>
       </Card>
+
+      {/* Feedback Section */}
+      <div className="text-center">
+        <Button
+          variant="outline"
+          onClick={() => setShowFeedback(!showFeedback)}
+          className="border-nature-green text-nature-green hover:bg-mint-green"
+        >
+          {language === 'th' ? 'แบ่งปันความคิดเห็น' : 'Share Feedback'}
+        </Button>
+      </div>
+
+      {showFeedback && (
+        <FeedbackForm onSubmit={handleFeedbackSubmit} />
+      )}
+
+      {/* Premium Modal */}
+      <PremiumModal
+        isOpen={showPremiumModal}
+        onClose={() => setShowPremiumModal(false)}
+        onUpgrade={handleUpgrade}
+      />
     </div>
   );
 };

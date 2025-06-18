@@ -1,33 +1,45 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Play, Wind, BookOpen, Clock, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import MeditationPlayer from '@/components/meditation/MeditationPlayer';
 
 const Content: React.FC = () => {
   const { t, language } = useLanguage();
   const navigate = useNavigate();
+  const [selectedMeditation, setSelectedMeditation] = useState<{
+    title: string;
+    duration: number;
+    theme: 'sleep' | 'stress' | 'mindfulness' | 'focus';
+  } | null>(null);
 
   const meditationSessions = [
     {
       title: language === 'th' ? 'การทำสมาธิเพื่อการนอนหลับ' : 'Sleep Meditation',
-      duration: '15 min',
-      theme: 'sleep',
+      duration: 15,
+      theme: 'sleep' as const,
       gradient: 'from-purple-400 to-indigo-500'
     },
     {
       title: language === 'th' ? 'การทำสมาธิเพื่อลดความเครียด' : 'Stress Relief',
-      duration: '10 min',
-      theme: 'stress',
+      duration: 10,
+      theme: 'stress' as const,
       gradient: 'from-calm-blue to-soft-blue'
     },
     {
       title: language === 'th' ? 'การทำสมาธิเพื่อความมีสติ' : 'Mindfulness',
-      duration: '5 min',
-      theme: 'mindfulness',
+      duration: 5,
+      theme: 'mindfulness' as const,
       gradient: 'from-nature-green to-mint-green'
+    },
+    {
+      title: language === 'th' ? 'การทำสมาธิเพื่อสมาธิ' : 'Focus Meditation',
+      duration: 8,
+      theme: 'focus' as const,
+      gradient: 'from-sunset-orange to-lotus-pink'
     }
   ];
 
@@ -39,6 +51,10 @@ const Content: React.FC = () => {
     {
       title: language === 'th' ? 'การหายใจลึก' : 'Deep Breathing',
       description: language === 'th' ? 'การหายใจเพื่อลดความวิตกกังวล' : 'Breathing for anxiety relief'
+    },
+    {
+      title: language === 'th' ? 'การหายใจสลับจมูก' : 'Alternate Nostril Breathing',
+      description: language === 'th' ? 'เทคนิคโยคะเพื่อความสมดุล' : 'Yoga technique for balance'
     }
   ];
 
@@ -52,8 +68,37 @@ const Content: React.FC = () => {
       title: language === 'th' ? 'ความสำคัญของการนอนหลับต่อสุขภาพจิต' : 'Sleep and Mental Health',
       readTime: '7 min',
       category: language === 'th' ? 'การนอนหลับ' : 'Sleep'
+    },
+    {
+      title: language === 'th' ? 'การปฏิบัติสติในชีวิตประจำวัน' : 'Daily Mindfulness Practice',
+      readTime: '6 min',
+      category: language === 'th' ? 'สติ' : 'Mindfulness'
     }
   ];
+
+  const handleMeditationSelect = (session: typeof meditationSessions[0]) => {
+    setSelectedMeditation({
+      title: session.title,
+      duration: session.duration,
+      theme: session.theme
+    });
+  };
+
+  const handleMeditationComplete = () => {
+    setSelectedMeditation(null);
+    // Add achievement or progress tracking here
+  };
+
+  if (selectedMeditation) {
+    return (
+      <MeditationPlayer
+        title={selectedMeditation.title}
+        duration={selectedMeditation.duration}
+        theme={selectedMeditation.theme}
+        onComplete={handleMeditationComplete}
+      />
+    );
+  }
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -87,14 +132,18 @@ const Content: React.FC = () => {
                       </h3>
                       <div className="flex items-center space-x-2 text-sm text-gray-600">
                         <Clock size={14} />
-                        <span>{session.duration}</span>
+                        <span>{session.duration} min</span>
                         <Star size={14} className="text-sunset-orange" />
                         <span>4.8</span>
                       </div>
                     </div>
                   </div>
-                  <Button size="sm" className="bg-gradient-to-r from-nature-green to-dark-green text-white">
-                    {language === 'th' ? 'เล่น' : 'Play'}
+                  <Button 
+                    size="sm" 
+                    className="bg-gradient-to-r from-nature-green to-dark-green text-white"
+                    onClick={() => handleMeditationSelect(session)}
+                  >
+                    {language === 'th' ? 'เริ่ม' : 'Start'}
                   </Button>
                 </div>
               </CardContent>

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Calendar, Star, MapPin, Clock, Search, Filter, Crown } from 'lucide-react';
+import TherapistProfile from '@/components/therapist/TherapistProfile';
 
 interface Therapist {
   id: string;
@@ -21,12 +22,17 @@ interface Therapist {
   availableTh: string;
   isPremium: boolean;
   image: string;
+  bio?: string;
+  bioTh?: string;
+  experience?: number;
+  languages?: string[];
 }
 
 const Therapist: React.FC = () => {
   const { t, language } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('all');
+  const [selectedTherapist, setSelectedTherapist] = useState<Therapist | null>(null);
 
   const therapists: Therapist[] = [
     {
@@ -42,7 +48,11 @@ const Therapist: React.FC = () => {
       available: 'Today',
       availableTh: 'วันนี้',
       isPremium: false,
-      image: '👩‍⚕️'
+      image: '👩‍⚕️',
+      bioTh: 'นักจิตวิทยาที่มีประสบการณ์ 8 ปีในการช่วยเหลือผู้ป่วยที่มีความวิตกกังวลและภาวะซึมเศร้า',
+      bio: 'Experienced psychologist with 8 years helping patients with anxiety and depression',
+      experience: 8,
+      languages: ['Thai', 'English', 'Chinese']
     },
     {
       id: '2',
@@ -57,7 +67,11 @@ const Therapist: React.FC = () => {
       available: 'Tomorrow',
       availableTh: 'พรุ่งนี้',
       isPremium: true,
-      image: '👨‍⚕️'
+      image: '👨‍⚕️',
+      bioTh: 'ผู้เชี่ยวชาญด้านการให้คำปรึกษาความสัมพันธ์และครอบครัว มีประสบการณ์ 12 ปี',
+      bio: 'Specialist in relationship and family counseling with 12 years of experience',
+      experience: 12,
+      languages: ['Thai', 'English', 'Japanese']
     },
     {
       id: '3',
@@ -72,7 +86,11 @@ const Therapist: React.FC = () => {
       available: 'Next Week',
       availableTh: 'สัปดาห์หน้า',
       isPremium: true,
-      image: '👨‍⚕️'
+      image: '👨‍⚕️',
+      bioTh: 'ผู้เชี่ยวชาญด้านการจัดการความเครียดและการเพิ่มประสิทธิภาพการทำงาน',
+      bio: 'Expert in stress management and workplace performance enhancement',
+      experience: 10,
+      languages: ['English', 'Thai']
     }
   ];
 
@@ -86,6 +104,16 @@ const Therapist: React.FC = () => {
     if (selectedFilter === 'available') return matchesSearch && therapist.available === 'Today';
     return matchesSearch;
   });
+
+  const handleTherapistClick = (therapist: Therapist) => {
+    setSelectedTherapist(therapist);
+  };
+
+  const handleBooking = () => {
+    // Handle booking logic here
+    setSelectedTherapist(null);
+    // Navigate to booking page or show booking modal
+  };
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -187,6 +215,7 @@ const Therapist: React.FC = () => {
                     <Button
                       size="sm"
                       className="flex-1 bg-gradient-to-r from-nature-green to-dark-green text-white"
+                      onClick={() => handleBooking()}
                     >
                       <Calendar size={16} className="mr-1" />
                       {t('therapist.book')}
@@ -195,6 +224,7 @@ const Therapist: React.FC = () => {
                       variant="outline"
                       size="sm"
                       className="border-dark-green text-dark-green"
+                      onClick={() => handleTherapistClick(therapist)}
                     >
                       {language === 'th' ? 'ดูโปรไฟล์' : 'View Profile'}
                     </Button>
@@ -212,6 +242,15 @@ const Therapist: React.FC = () => {
             {language === 'th' ? 'ไม่พบนักจิตวิทยาที่ตรงกับการค้นหา' : 'No therapists found matching your search'}
           </p>
         </div>
+      )}
+
+      {/* Therapist Profile Modal */}
+      {selectedTherapist && (
+        <TherapistProfile
+          therapist={selectedTherapist}
+          onBook={handleBooking}
+          onClose={() => setSelectedTherapist(null)}
+        />
       )}
     </div>
   );

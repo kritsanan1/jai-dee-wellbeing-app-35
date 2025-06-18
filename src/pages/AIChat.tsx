@@ -6,12 +6,14 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Send, Bot, User, Heart, Save } from 'lucide-react';
 import { toast } from 'sonner';
+import VoiceInput from '@/components/voice/VoiceInput';
 
 interface Message {
   id: string;
   type: 'user' | 'ai';
   content: string;
   timestamp: Date;
+  mood?: 'happy' | 'sad' | 'anxious' | 'calm' | 'stressed';
 }
 
 const AIChat: React.FC = () => {
@@ -38,42 +40,113 @@ const AIChat: React.FC = () => {
     scrollToBottom();
   }, [messages]);
 
-  const handleSend = async () => {
-    if (!input.trim()) return;
+  const analyzeMood = (text: string): 'happy' | 'sad' | 'anxious' | 'calm' | 'stressed' => {
+    const lowerText = text.toLowerCase();
+    
+    // Simple mood analysis based on keywords
+    if (lowerText.includes('happy') || lowerText.includes('great') || lowerText.includes('good') || 
+        lowerText.includes('ดี') || lowerText.includes('สบาย') || lowerText.includes('มีความสุข')) {
+      return 'happy';
+    } else if (lowerText.includes('sad') || lowerText.includes('depressed') || lowerText.includes('down') ||
+               lowerText.includes('เศร้า') || lowerText.includes('หดหู่') || lowerText.includes('ไม่สบายใจ')) {
+      return 'sad';
+    } else if (lowerText.includes('anxious') || lowerText.includes('worried') || lowerText.includes('nervous') ||
+               lowerText.includes('วิตกกังวล') || lowerText.includes('กังวล') || lowerText.includes('ตื่นเต้น')) {
+      return 'anxious';
+    } else if (lowerText.includes('stressed') || lowerText.includes('pressure') || lowerText.includes('overwhelmed') ||
+               lowerText.includes('เครียด') || lowerText.includes('กดดัน') || lowerText.includes('ท้อแท้')) {
+      return 'stressed';
+    } else {
+      return 'calm';
+    }
+  };
 
+  const generateEmphatheticResponse = (mood: string, userMessage: string): string => {
+    const responses = {
+      th: {
+        happy: [
+          'ดีใจจังที่คุณรู้สึกดี! ความสุขคือพลังที่ดีที่สุด อยากลองทำสมาธิเพื่อเสริมพลังบวกไหมคะ?',
+          'น่ายินดีมากค่ะ! วันนี้คุณทำอะไรที่ทำให้มีความสุขบ้างคะ?',
+          'เยี่ยมมากเลย! ลองบันทึกความรู้สึกดีๆ นี้ไว้เป็นแรงบันดาลใจในวันที่ยากลำบากนะคะ'
+        ],
+        sad: [
+          'ฉันเข้าใจความรู้สึกของคุณ เศร้าใจเป็นเรื่องปกติ คุณอยากลองฟังเพลงสงบๆ หรือทำการหายใจลึกๆ ไหมคะ?',
+          'ขอโอบกอดคุณนะคะ ในช่วงที่เศร้าใจ การดูแลตัวเองเป็นสิ่งสำคัญมาก ลองพักผ่อนให้เพียงพอนะคะ',
+          'ความเศร้าเป็นส่วนหนึ่งของชีวิต ฉันอยู่ที่นี่เพื่อรับฟังคุณเสมอ อยากพูดเพิ่มเติมไหมคะ?'
+        ],
+        anxious: [
+          'เข้าใจเลยค่ะว่าคุณรู้สึกกังวล ลองทำการหายใจ 4-7-8 กันไหมคะ? หายใจเข้า 4 วินาที กลั้น 7 วินาที แล้วหายใจออก 8 วินาที',
+          'ความวิตกกังวลทำให้รู้สึกไม่สบาย ลองนั่งสมาธิสั้นๆ 5 นาทีไหมคะ? จะช่วยทำให้จิตใจสงบลง',
+          'ฉันอยู่ที่นี่กับคุณ อยากลองเทคนิคการผ่อนคลายกล้ามเนื้อไหมคะ? จะช่วยลดความตึงเครียดได้'
+        ],
+        stressed: [
+          'เครียดหนักมากเลยสินะคะ ลองหยุดพักสักครู่ แล้วทำการหายใจลึกๆ ให้อากาศไหลผ่านร่างกายอย่างช้าๆ',
+          'ความเครียดส่งผลต่อร่างกายและจิตใจ อยากลองการทำสมาธิแบบสั้นๆ หรือฟังเสียงธรรมชาติไหมคะ?',
+          'คุณทำงานหนักมาก ลองให้เวลาตัวเองพักผ่อน การดูแลตัวเองไม่ใช่เรื่องเห็นแก่ตัวนะคะ'
+        ],
+        calm: [
+          'ดีใจที่คุณรู้สึกสงบ นี่คือสถานะจิตใจที่ดีมาก อยากเรียนรู้เทคนิคการรักษาความสงบนี้ไหมคะ?',
+          'ความสงบภายในเป็นของขวัญที่ดีที่สุด ลองทำสมาธิเพื่อเสริมสร้างความสงบนี้ให้มากขึ้นไหมคะ?',
+          'สวยงามมาก! ลองแบ่งปันพลังบวกนี้ให้คนรอบข้างด้วยนะคะ'
+        ]
+      },
+      en: {
+        happy: [
+          'I\'m so glad you\'re feeling good! Happiness is the best energy. Would you like to try some meditation to boost those positive vibes?',
+          'That\'s wonderful to hear! What made you happy today?',
+          'Excellent! Try to remember this feeling for those challenging days ahead.'
+        ],
+        sad: [
+          'I understand how you\'re feeling. Sadness is natural. Would you like to try some calming music or deep breathing exercises?',
+          'Sending you a virtual hug. Taking care of yourself during sad times is very important. Make sure to rest well.',
+          'Sadness is part of life. I\'m here to listen to you always. Would you like to share more?'
+        ],
+        anxious: [
+          'I understand you\'re feeling anxious. Let\'s try the 4-7-8 breathing technique: breathe in for 4 seconds, hold for 7, breathe out for 8.',
+          'Anxiety can be uncomfortable. Would you like to try a short 5-minute meditation? It can help calm your mind.',
+          'I\'m here with you. Would you like to try some muscle relaxation techniques? They can help reduce tension.'
+        ],
+        stressed: [
+          'You sound really stressed. Let\'s take a moment to pause and take some deep breaths, letting the air flow slowly through your body.',
+          'Stress affects both body and mind. Would you like to try a short meditation or listen to some nature sounds?',
+          'You\'ve been working so hard. Try to give yourself some rest time. Self-care isn\'t selfish.'
+        ],
+        calm: [
+          'I\'m happy you\'re feeling calm. This is a beautiful state of mind. Would you like to learn techniques to maintain this peace?',
+          'Inner peace is the best gift. Would you like to try some meditation to strengthen this calmness even more?',
+          'Beautiful! Try sharing this positive energy with people around you.'
+        ]
+      }
+    };
+
+    const moodResponses = responses[language][mood as keyof typeof responses.th];
+    return moodResponses[Math.floor(Math.random() * moodResponses.length)];
+  };
+
+  const handleSend = async (messageText?: string) => {
+    const textToSend = messageText || input;
+    if (!textToSend.trim()) return;
+
+    const mood = analyzeMood(textToSend);
     const userMessage: Message = {
       id: Date.now().toString(),
       type: 'user',
-      content: input,
-      timestamp: new Date()
+      content: textToSend,
+      timestamp: new Date(),
+      mood
     };
 
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setIsTyping(true);
 
-    // Simulate AI response
+    // Simulate AI response with mood analysis
     setTimeout(() => {
-      const aiResponses = {
-        th: [
-          'ฉันเข้าใจความรู้สึกของคุณ คุณต้องการลองทำการฝึกหายใจ 5 นาทีไหมคะ?',
-          'ขขอบคุณที่แบ่งปันกับฉัน คุณอยากลองทำสมาธิเพื่อช่วยผ่อนคลายไหมคะ?',
-          'ฉันอยู่ที่นี่เพื่อรับฟังคุณเสมอ มาลองหาวิธีที่จะทำให้คุณรู้สึกดีขึ้นกันนะคะ'
-        ],
-        en: [
-          'I understand how you\'re feeling. Would you like to try a 5-minute breathing exercise?',
-          'Thank you for sharing with me. Would you like to try some meditation to help you relax?',
-          'I\'m here to listen. Let\'s find ways to help you feel better.'
-        ]
-      };
-
-      const responses = aiResponses[language];
-      const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-
+      const aiResponse = generateEmphatheticResponse(mood, textToSend);
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         type: 'ai',
-        content: randomResponse,
+        content: aiResponse,
         timestamp: new Date()
       };
 
@@ -88,12 +161,31 @@ const AIChat: React.FC = () => {
     }
   };
 
+  const handleVoiceTranscript = (transcript: string) => {
+    setInput(transcript);
+    // Auto-send voice input after a short delay
+    setTimeout(() => {
+      handleSend(transcript);
+    }, 500);
+  };
+
   const saveMood = () => {
-    toast.success(
-      language === 'th' 
-        ? 'บันทึกอารมณ์เรียบร้อยแล้ว' 
-        : 'Mood saved successfully'
-    );
+    const lastUserMessage = messages.filter(m => m.type === 'user').pop();
+    if (lastUserMessage?.mood) {
+      // Save mood to local storage or send to backend
+      const moodData = {
+        mood: lastUserMessage.mood,
+        message: lastUserMessage.content,
+        timestamp: lastUserMessage.timestamp.toISOString()
+      };
+      
+      localStorage.setItem('lastMood', JSON.stringify(moodData));
+      toast.success(
+        language === 'th' 
+          ? 'บันทึกอารมณ์เรียบร้อยแล้ว' 
+          : 'Mood saved successfully'
+      );
+    }
   };
 
   return (
@@ -138,11 +230,21 @@ const AIChat: React.FC = () => {
                       <User size={12} className="text-white" />
                     </div>
                   )}
-                  <p className={`text-sm ${language === 'th' ? 'font-sarabun' : 'font-poppins'} ${
-                    message.type === 'user' ? 'text-white' : 'text-gray-700'
-                  }`}>
-                    {message.content}
-                  </p>
+                  <div className="flex-1">
+                    <p className={`text-sm ${language === 'th' ? 'font-sarabun' : 'font-poppins'} ${
+                      message.type === 'user' ? 'text-white' : 'text-gray-700'
+                    }`}>
+                      {message.content}
+                    </p>
+                    {message.mood && message.type === 'user' && (
+                      <div className="mt-1">
+                        <span className="text-xs bg-white/20 px-2 py-1 rounded-full">
+                          {language === 'th' ? 'อารมณ์: ' : 'Mood: '}
+                          {message.mood}
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -183,8 +285,14 @@ const AIChat: React.FC = () => {
           />
           <Heart className="absolute right-3 top-1/2 transform -translate-y-1/2 text-lotus-pink" size={16} />
         </div>
+        
+        <VoiceInput 
+          onTranscript={handleVoiceTranscript}
+          language={language}
+        />
+        
         <Button
-          onClick={handleSend}
+          onClick={() => handleSend()}
           disabled={!input.trim()}
           className="bg-gradient-to-r from-nature-green to-dark-green text-white shadow-lg gentle-hover"
         >
