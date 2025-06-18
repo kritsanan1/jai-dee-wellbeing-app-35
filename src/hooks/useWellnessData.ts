@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { Star, Award, Zap } from 'lucide-react';
+import { Star, Award, Zap, LucideIcon } from 'lucide-react';
 
 interface WellnessData {
   currentStreak: number;
@@ -20,7 +20,7 @@ interface Achievement {
   id: string;
   title: string;
   titleTh: string;
-  icon: React.ComponentType<{ size?: number; className?: string; }>;
+  icon: LucideIcon;
   unlocked: boolean;
   date?: Date;
 }

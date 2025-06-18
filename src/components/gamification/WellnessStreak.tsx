@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Flame, Star, Trophy, Target } from 'lucide-react';
+import { Flame, Star, Trophy, Target, LucideIcon } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import ProgressIndicator from '@/components/ui/progress-indicator';
 
@@ -16,7 +16,7 @@ interface Achievement {
   id: string;
   title: string;
   titleTh: string;
-  icon: React.ComponentType<{ size?: number; className?: string; }>;
+  icon: LucideIcon;
   unlocked: boolean;
   date?: Date;
 }
