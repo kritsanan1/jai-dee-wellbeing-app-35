@@ -1,94 +1,40 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. */
-
+/* Thai mental health app color system */
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 254 254 254; /* warm-white */
+    --foreground: 46 125 50; /* dark-green for text */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 254 254 254; /* warm-white */
+    --card-foreground: 46 125 50;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 254 254 254;
+    --popover-foreground: 46 125 50;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 46 125 50; /* dark-green */
+    --primary-foreground: 254 254 254;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 230 240 250; /* soft-blue */
+    --secondary-foreground: 46 125 50;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 245 247 250; /* gentle-gray */
+    --muted-foreground: 107 114 128;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 212 244 226; /* mint-green */
+    --accent-foreground: 46 125 50;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 239 68 68;
+    --destructive-foreground: 254 254 254;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 230 240 250; /* soft-blue for borders */
+    --input: 245 247 250; /* gentle-gray for inputs */
+    --ring: 46 125 50; /* dark-green for focus rings */
 
-    --radius: 0.5rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --radius: 0.75rem; /* Softer, more rounded corners */
   }
 }
 
@@ -98,6 +44,50 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-poppins;
+  }
+
+  /* Thai text styling */
+  .thai-text {
+    @apply font-sarabun;
+  }
+
+  /* Meditation breathing effect */
+  .breathing-circle {
+    @apply animate-breathe;
+  }
+
+  /* Gentle hover effects for mental health app */
+  .gentle-hover {
+    @apply transition-all duration-300 hover:shadow-lg hover:scale-105;
+  }
+
+  /* Custom scrollbar for chat */
+  .chat-scroll::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .chat-scroll::-webkit-scrollbar-track {
+    background: rgb(230, 240, 250);
+  }
+
+  .chat-scroll::-webkit-scrollbar-thumb {
+    background: rgb(46, 125, 50);
+    border-radius: 2px;
+  }
+}
+
+/* Gradient backgrounds for mental wellness */
+@layer utilities {
+  .bg-wellness-gradient {
+    background: linear-gradient(135deg, rgb(230, 240, 250) 0%, rgb(212, 244, 226) 100%);
+  }
+
+  .bg-calm-gradient {
+    background: linear-gradient(135deg, rgb(179, 217, 242) 0%, rgb(230, 240, 250) 100%);
+  }
+
+  .bg-meditation-gradient {
+    background: linear-gradient(135deg, rgb(212, 244, 226) 0%, rgb(179, 217, 242) 100%);
   }
 }
