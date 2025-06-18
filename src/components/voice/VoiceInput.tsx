@@ -20,7 +20,7 @@ const VoiceInput: React.FC<VoiceInputProps> = ({
 
   useEffect(() => {
     // Check if speech recognition is supported
-    const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
+    const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
     setIsSupported(!!SpeechRecognition);
   }, []);
 
@@ -30,7 +30,7 @@ const VoiceInput: React.FC<VoiceInputProps> = ({
       return;
     }
 
-    const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
+    const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
     const recognition = new SpeechRecognition();
     
     recognition.lang = voiceLang === 'th' ? 'th-TH' : 'en-US';
@@ -41,13 +41,13 @@ const VoiceInput: React.FC<VoiceInputProps> = ({
       setIsListening(true);
     };
 
-    recognition.onresult = (event) => {
+    recognition.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript;
       onTranscript(transcript);
       setIsListening(false);
     };
 
-    recognition.onerror = (event) => {
+    recognition.onerror = (event: any) => {
       console.error('Speech recognition error:', event.error);
       setIsListening(false);
       toast.error(language === 'th' ? 'เกิดข้อผิดพลาดในการรับรู้เสียง' : 'Speech recognition error');
