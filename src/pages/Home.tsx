@@ -3,20 +3,32 @@ import React from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
 import { Sparkles, Brain, Heart, Sunrise, Crown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import WellnessStreak from '@/components/gamification/WellnessStreak';
+import AnimatedButton from '@/components/ui/animated-button';
+import ProgressIndicator from '@/components/ui/progress-indicator';
+import { useWellnessData } from '@/hooks/useWellnessData';
 
 const Home: React.FC = () => {
   const { t, language } = useLanguage();
   const navigate = useNavigate();
+  const { wellnessData, isLoading } = useWellnessData();
 
   const moodData = {
     current: 'Calm',
     currentTh: 'สงบ',
     percentage: 75,
-    streak: 5
+    streak: wellnessData.currentStreak
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[200px]">
+        <div className="animate-spin w-8 h-8 border-4 border-nature-green border-t-transparent rounded-full"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -33,6 +45,14 @@ const Home: React.FC = () => {
           {language === 'th' ? 'เริ่มต้นวันใหม่ด้วยจิตใจที่ดี' : 'Start your day with mindfulness'}
         </p>
       </div>
+
+      {/* Wellness Streak Component */}
+      <WellnessStreak
+        currentStreak={wellnessData.currentStreak}
+        weeklyGoal={wellnessData.weeklyGoal}
+        weeklyProgress={wellnessData.weeklyProgress}
+        achievements={wellnessData.achievements}
+      />
 
       {/* Daily Mood Summary */}
       <Card className="bg-white/80 backdrop-blur-sm border-soft-blue shadow-lg gentle-hover">
@@ -56,31 +76,39 @@ const Home: React.FC = () => {
               <Heart className="text-white" size={20} />
             </div>
           </div>
-          <Progress value={moodData.percentage} className="h-2" />
+          <ProgressIndicator 
+            value={moodData.percentage} 
+            variant="mood"
+            animated
+          />
         </CardContent>
       </Card>
 
       {/* Quick Actions */}
       <div className="grid grid-cols-2 gap-4">
-        <Button
+        <AnimatedButton
           onClick={() => navigate('/content')}
-          className="h-20 bg-gradient-to-r from-nature-green to-dark-green text-white rounded-2xl gentle-hover flex flex-col items-center justify-center space-y-2 shadow-lg"
+          className="h-20 bg-gradient-to-r from-nature-green to-dark-green text-white rounded-2xl flex flex-col items-center justify-center space-y-2 shadow-lg"
+          animation="scale"
+          ripple
         >
           <Sunrise size={24} />
           <span className={`text-sm font-medium ${language === 'th' ? 'font-sarabun' : 'font-poppins'}`}>
             {t('home.start_meditation')}
           </span>
-        </Button>
+        </AnimatedButton>
         
-        <Button
+        <AnimatedButton
           onClick={() => navigate('/chat')}
-          className="h-20 bg-gradient-to-r from-calm-blue to-soft-blue text-white rounded-2xl gentle-hover flex flex-col items-center justify-center space-y-2 shadow-lg"
+          className="h-20 bg-gradient-to-r from-calm-blue to-soft-blue text-white rounded-2xl flex flex-col items-center justify-center space-y-2 shadow-lg"
+          animation="glow"
+          ripple
         >
           <Brain size={24} />
           <span className={`text-sm font-medium ${language === 'th' ? 'font-sarabun' : 'font-poppins'}`}>
             {t('home.check_mood')}
           </span>
-        </Button>
+        </AnimatedButton>
       </div>
 
       {/* Premium Upgrade Banner */}
@@ -98,9 +126,14 @@ const Home: React.FC = () => {
                 </p>
               </div>
             </div>
-            <Button variant="secondary" size="sm" className="bg-white text-sunset-orange hover:bg-gray-100">
+            <AnimatedButton 
+              variant="secondary" 
+              size="sm" 
+              className="bg-white text-sunset-orange hover:bg-gray-100"
+              animation="bounce"
+            >
               {language === 'th' ? 'อัปเกรด' : 'Upgrade'}
-            </Button>
+            </AnimatedButton>
           </div>
         </CardContent>
       </Card>
